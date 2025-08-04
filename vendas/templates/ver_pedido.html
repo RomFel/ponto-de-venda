@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <!-- Card de Resumo do Pedido -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0"><i class="fas fa-box-open me-2"></i>Pedido #{{ pedido.id|stringformat:"05d" }}</h5>
+    </div>
+    <div class="card-body">
+      <p><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+      <p><strong>Abertura:</strong> {{ pedido.abertura }}</p>
+      {% if pedido.status != 'finalizado' %}
+        <p><strong>Subtotal:</strong> R$ {{ pedido.total|floatformat:2 }}</p>
+      {% else %}
+        <p><strong>Total Pago:</strong> R$ {{ pedido.total|floatformat:2 }}</p>
+        <!-- Tabela de Pagamentos -->
+        <div class="mt-3">
+          <h6><i class="fas fa-credit-card me-2"></i>Forma(s) de Pagamento</h6>
+          <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark">
+              <tr>
+                <th>Forma</th>
+                <th>Valor</th>
+                <th>Troco</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pagamento in pagamentos %}
+              <tr>
+                <td>{{ pagamento.forma_pagamento }}</td>
+                <td>R$ {{ pagamento.valor|floatformat:2 }}</td>
+                <td>R$ {{pagamento.troco| floatformat:2  }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="2" class="text-center">Nenhum pagamento registrado.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Formulário de Adição de Itens -->
+  {% if pedido.status != 'finalizado' %}
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-warning text-dark">
+      <h6 class="mb-0"><i class="fas fa-plus me-2"></i>Adicionar Item ao Pedido</h6>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <table class="table table-borderless">
+          {{ form.as_table }}
+        </table>
+        <button type="submit" class="btn btn-warning"><i class="fas fa-plus-circle me-1"></i>Adicionar</button>
+      </form>
+
+      {% if pedido.total > 0 %}
+      <div class="text-end mt-3">
+        <a href="{% url 'pagamento' pedido.id %}">
+          <button type="button" class="btn btn-danger">
+            <i class="fas fa-hand-holding-usd me-2"></i>Ir para Pagamento
+          </button>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Tabela de Itens do Pedido -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      <h6 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Itens do Pedido</h6>
+    </div>
+    <div class="card-body">
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Produto</th>
+            <th>Qtd</th>
+            <th>Unit.</th>
+            <th>Desconto</th>
+            <th>Acréscimo</th>
+            <th>Total</th>
+            {% if pedido.status != 'finalizado' %}
+              <th>Ações</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in itens %}
+          <tr>
+            <td>{{ item.produto }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>R$ {{ item.produto.preco_venda|floatformat:2 }}</td>
+            <td>R$ {{ item.desconto|floatformat:2 }}</td>
+            <td>R$ {{ item.acrescimo|floatformat:2 }}</td>
+            <td>R$ {{ item.total|floatformat:2 }}</td>
+            {% if pedido.status != 'finalizado' %}
+              <td>
+                <a href="{% url 'deletar_item' item.id %}" class="btn btn-sm btn-outline-danger"
+                   onclick="return confirm('Você realmente quer deletar?')">
+                  <i class="fas fa-trash-alt"></i>
+                </a>
+              </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center">Nenhum item adicionado.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock content %}

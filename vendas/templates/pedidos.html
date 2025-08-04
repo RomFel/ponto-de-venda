@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <!-- Card Novo Pedido -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5><i class="fas fa-plus-square me-2"></i>Novo Pedido</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-file-medical me-2"></i>Criar Pedido
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pedidos Abertos -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-warning text-dark">
+      <h5><i class="fas fa-boxes me-2"></i>Pedidos Abertos</h5>
+    </div>
+    <div class="card-body">
+      <div class="d-flex flex-wrap gap-3">
+        {% for pedido in pedidos_ativos %}
+          <a href="{% url 'editar_pedido' pedido.id %}" class="text-decoration-none">
+            <div class="card text-center" style="width: 150px;">
+              <div class="card-body {% if pedido.total > 0 %}bg-warning{% else %}bg-danger text-white{% endif %}">
+                <h6>#{{ pedido.id|stringformat:"05d" }}</h6>
+                <p class="mb-1">{{ pedido.cliente }}</p>
+                <strong>R$ {{ pedido.total|floatformat:2 }}</strong>
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <p class="text-muted">Nenhum pedido aberto.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Pedidos Finalizados -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-success text-white">
+      <h5><i class="fas fa-check-circle me-2"></i>Pedidos Finalizados</h5>
+    </div>
+    <div class="card-body">
+      <div class="d-flex flex-wrap gap-3">
+        {% for pedido in pedidos_final %}
+          <a href="{% url 'editar_pedido' pedido.id %}" class="text-decoration-none">
+            <div class="card text-center" style="width: 150px;">
+              <div class="card-body bg-success text-white">
+                <h6>#{{ pedido.id|stringformat:"05d" }}</h6>
+                <p class="mb-1">{{ pedido.cliente }}</p>
+                <strong>R$ {{ pedido.total|floatformat:2 }}</strong>
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <p class="text-muted">Nenhum pedido finalizado.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
