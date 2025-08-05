@@ -22,6 +22,7 @@ def vendas_dia(request):
         # Separa por débito
         debito += PedidoPagamento.objects.filter(
             pedido=pedido, forma_pagamento=3).aggregate(total=Sum('valor'))['total'] or 0
+        # Separa por crédido
         credito += PedidoPagamento.objects.filter(
             pedido=pedido, forma_pagamento=4).aggregate(total=Sum('valor'))['total'] or 0
         
