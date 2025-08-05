@@ -1,14 +1,23 @@
 {% extends 'base.html' %}
-{% block content %}
-<h1>relatório do dia</h1>
-<p>Total do dia: {{ total }}</p>
-<p>Pedidos:</p>
-<p>Dinheiro:</p>
-<p>Pix:</p>
-<p>Débito:</p>
-<p>Crédito:</p>
 
-{% for pedido in pedidos %}
-    <p>{{pedido.abertura}} - {{pedido.total}}</p>
-{% endfor %}
-{% endblock content %}
+{% block content %}
+<div>
+    <div class="card">
+        <div class="card-header">
+            <h1>relatório do dia</h1>
+        </div>
+        <p>Total do dia: {{ total }}</p>
+        <p>Pedidos: {{ len_pedidos }}</p>
+        <p>Dinheiro: {{ dinheiro }}</p>
+        <p>Pix: {{ pix }}</p>
+        <p>Débito: {{ debito }}</p>
+        <p>Crédito: {{ credito }}</p>
+    </div>
+    
+    {% for pedido in pedidos %}
+        <div class="card">
+            <p>{{ pedido.id }} - {{pedido.abertura}} - {{pedido.total}}</p>
+        </div>
+    {% endfor %}
+    {% endblock content %}
+</div>
