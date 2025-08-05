@@ -73,9 +73,6 @@ class PedidoPagamento(models.Model):
         super().save(*args, **kwargs)
 
 
-
-
-
 class AcrescimoDesconto(models.Model):
     pedido = models.ForeignKey(Pedid, on_delete=models.CASCADE)
     desconto = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True)
