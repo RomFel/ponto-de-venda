@@ -1,19 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
-
-from datetime import datetime, timedelta
+from django.utils.timezone import now
 
 from .models import Pedid, ItemPedido, PedidoPagamento
 from .forms import PedidoForm, ItemPedidoForm, PedidoPagamentoForm, AcrescimoDescontoForm
 
-# lembrar pôr essas var em outro lugar
-hoje = datetime.now().date()
-amanha = hoje + timedelta(days=1)
 
 # Create your views here.
 def lista_pedidos(request):
+    hoje = now().date()
     pedidos_ativo = Pedid.objects.filter(status='ativo').order_by('-abertura')
-    pedidos_final = Pedid.objects.filter(status='finalizado').order_by('-abertura')
+    pedidos_final = Pedid.objects.filter(abertura__gte=hoje ,status='finalizado').order_by('-abertura')
     if request.method == 'POST':
         form = PedidoForm(request.POST)
         if form.is_valid():
